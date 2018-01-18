@@ -14,7 +14,8 @@ func main() {
 	wordPtr := flag.String("path", "", "The path to the folder with video and srt files.")
 	searchWordPtr := flag.String(".", "", "Provide a unique word to identify the files by.")
 	videoFileExtensionPtr := flag.String("videoFileExtension", ".mkv", "Provide the video file extension. Defaults to .mkv.")
-	confirmationRequiredPtr := flag.String("confirmation", "", "Disable the confirmation before every rename.")
+	subtitleFileExtensionPtr := flag.String("subtitleFileExtension", ".srt", "Provide the subtitle file extension. Defaults to .srt.")
+	confirmationRequiredPtr := flag.String("disableConfirmation", "", "Disable the confirmation before every rename.")
 
 	flag.Parse()
 
@@ -22,6 +23,7 @@ func main() {
 	searchWord :=  *searchWordPtr
 	videoFileExtension :=  *videoFileExtensionPtr
 	confirmationRequired := *confirmationRequiredPtr
+	subtitleFileExtension := *subtitleFileExtensionPtr
 
 	if pathToFolder == "" {
 		fmt.Println("Please define a -path")
@@ -89,8 +91,8 @@ func main() {
 			filenameExpression, _ := regexp.Compile("(.*)(\\.\\w*)$")
 			srtFilename := filenameExpression.FindStringSubmatch(g.Name())
 
-			// Skip all files with the defined video extension to only get subtitle files. TODO: Maybe only search for .srt files?
-			if checkForFileExtension(videoFileExtension, srtFilename[2]) {
+			// Skip all files without the defined subtitle extension.
+			if !checkForFileExtension(subtitleFileExtension, srtFilename[2]) {
 				continue
 			}
 
