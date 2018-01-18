@@ -9,6 +9,7 @@ import (
 	"regexp"
 	"strings"
 	"os"
+	"strconv"
 )
 
 func main() {
@@ -21,10 +22,12 @@ func main() {
 	flag.Parse()
 
 	pathToFolder :=  *pathToFolderPtr
+	pathToFolder = ""
 	searchWord :=  *searchWordPtr
 	videoFileExtension :=  *videoFileExtensionPtr
 	confirmationRequired := *confirmationRequiredPtr
 	subtitleFileExtension := *subtitleFileExtensionPtr
+	fileRenameCount := 0
 
 	// If no path was specified, use the current folder.
 	if pathToFolder == "" {
@@ -77,8 +80,8 @@ func main() {
 		filenameExpression, _ := regexp.Compile("(.*)(\\.\\w*)$")
 		videoFilename := filenameExpression.FindStringSubmatch(f.Name())
 
-		// Skip all files without the defined video extension.
-		if !checkForFileExtension(videoFileExtension, videoFilename[2]) {
+		// Check if the file even has a file extension and if that file extension is the video type.
+		if len(videoFilename) < 2 || !checkForFileExtension(videoFileExtension, videoFilename[2]) {
 			continue
 		}
 
@@ -128,13 +131,22 @@ func main() {
 			}
 
 			err := os.Rename(pathToFolder + g.Name(), pathToFolder + videoFilename[1] + ".srt")
-			fmt.Println("File was renamed to " + videoFilename[1] + ".srt")
 
 			if err != nil {
 				log.Fatal(err)
+			} else {
+				fmt.Println("File was renamed to " + videoFilename[1] + ".srt")
+				fileRenameCount++
 			}
 		}
 	}
+
+	if fileRenameCount > 0 {
+		fmt.Println(strconv.Itoa(fileRenameCount) + " files renamed.")
+	} else {
+		fmt.Println("No files found to rename.")
+	}
+
 }
 
 func checkForFileName(searchWord string, sourceWord string) bool {
