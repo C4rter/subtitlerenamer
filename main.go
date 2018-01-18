@@ -35,7 +35,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		pathToFolder = currentPath + "\\";
+		pathToFolder = currentPath + "\\"
 	}
 
 	confirmationRequiredBool := false
