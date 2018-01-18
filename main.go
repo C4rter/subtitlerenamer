@@ -14,7 +14,7 @@ import (
 
 func main() {
 	pathToFolderPtr := flag.String("path", "", "The path to the folder with video and srt files. If non is specified the folder with the executable is used.")
-	searchWordPtr := flag.String(".", "", "Provide a unique word to identify the files by. E.g. 'Queens' or 'Mother'")
+	searchWordPtr := flag.String("searchWord", "", "Provide a unique word to identify the files by. E.g. 'Queens' or 'Mother'")
 	videoFileExtensionPtr := flag.String("videoFileExtension", ".mkv", "Provide the video file extension. Defaults to .mkv.")
 	subtitleFileExtensionPtr := flag.String("subtitleFileExtension", ".srt", "Provide the subtitle file extension. Defaults to .srt.")
 	confirmationRequiredPtr := flag.String("enableConfirmation", "", "Enable the confirmation before every rename.")
