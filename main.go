@@ -17,7 +17,7 @@ func main() {
 	searchWordPtr := flag.String(".", "", "Provide a unique word to identify the files by. E.g. 'Queens' or 'Mother'")
 	videoFileExtensionPtr := flag.String("videoFileExtension", ".mkv", "Provide the video file extension. Defaults to .mkv.")
 	subtitleFileExtensionPtr := flag.String("subtitleFileExtension", ".srt", "Provide the subtitle file extension. Defaults to .srt.")
-	confirmationRequiredPtr := flag.String("disableConfirmation", "", "Disable the confirmation before every rename.")
+	confirmationRequiredPtr := flag.String("enableConfirmation", "", "Enable the confirmation before every rename.")
 
 	flag.Parse()
 
@@ -35,11 +35,11 @@ func main() {
 			log.Fatal(err)
 		}
 
-		pathToFolder = currentPath;
+		pathToFolder = currentPath + "\\";
 	}
 
 	confirmationRequiredBool := false
-	if confirmationRequired == "" {
+	if confirmationRequired != "" {
 		confirmationRequiredBool = true
 	}
 
