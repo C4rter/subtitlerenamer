@@ -12,61 +12,17 @@ import (
 	"strconv"
 )
 
+var pathToFolder string
+var searchWord string
+var videoFileExtension string
+var confirmationRequired string
+var subtitleFileExtension string
+var confirmationRequiredBool bool
+
 func main() {
-	pathToFolderPtr := flag.String("path", "", "The path to the folder with video and srt files. If none is specified the folder with the executable is used.")
-	searchWordPtr := flag.String("searchWord", "", "Provide a unique word to identify the files by. E.g. 'Queens' or 'Mother'")
-	videoFileExtensionPtr := flag.String("videoFileExtension", ".mkv", "Provide the video file extension. Defaults to .mkv.")
-	subtitleFileExtensionPtr := flag.String("subtitleFileExtension", ".srt", "Provide the subtitle file extension. Defaults to .srt.")
-	confirmationRequiredPtr := flag.String("enableConfirmation", "", "Enable the confirmation before every rename. If enabled every rename need to be confirmed by typing 'y' or denied by typing 'n'")
+	readCommandLineArguments()
 
-	flag.Parse()
-
-	pathToFolder :=  *pathToFolderPtr
-	searchWord :=  *searchWordPtr
-	videoFileExtension :=  *videoFileExtensionPtr
-	confirmationRequired := *confirmationRequiredPtr
-	subtitleFileExtension := *subtitleFileExtensionPtr
 	fileRenameCount := 0
-
-	// If no path was specified, use the current folder.
-	if pathToFolder == "" {
-		currentPath, err := filepath.Abs(filepath.Dir(os.Args[0]))
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		pathToFolder = currentPath
-	}
-
-	// Check if the last character in the path is a slash. If not, add it.
-	if !strings.HasSuffix(pathToFolder, "/") && !strings.HasSuffix(pathToFolder, "\\") {
-		pathToFolder = pathToFolder + "\\"
-	}
-
-	confirmationRequiredBool := false
-	if confirmationRequired != "" {
-		confirmationRequiredBool = true
-	}
-
-	fmt.Println("Looking for files in " + pathToFolder)
-
-	if searchWord != "" {
-		fmt.Println("Looking for files that include the expression: " + searchWord)
-	} else {
-		fmt.Println("Looking for all files")
-	}
-
-	if videoFileExtension != "" {
-		fmt.Println("Looking for video files with file extension: " + videoFileExtension)
-	} else {
-		fmt.Println("Looking for all video files")
-	}
-
-	if subtitleFileExtension != "" {
-		fmt.Println("Looking for subtitle files with file extension: " + subtitleFileExtension)
-	} else {
-		fmt.Println("Looking for all subtitle files")
-	}
 
 	files, err := ioutil.ReadDir(pathToFolder)
 	if err != nil {
@@ -89,16 +45,16 @@ func main() {
 			continue
 		}
 
+		// Skip all files that do not contain "SYYEYY" (e.g. S02E12)
 		match, _ := regexp.MatchString("(?i)(S\\w{2,2}E\\w{2,2})", f.Name())
-
-		// Skip all files that do not contains "SYYEYY" (e.g. S02E12)
 		if !match {
 			continue
 		}
 
+		// Get the season and episode number from the file name.
 		r, _ := regexp.Compile("(?i)S(\\w{2,2})E(\\w{2,2})")
-		result := r.FindStringSubmatch(f.Name())
-		result = append(result[:0], result[1:]...)
+		seasonAndEpisodeNumber := r.FindStringSubmatch(f.Name())
+		seasonAndEpisodeNumber = append(seasonAndEpisodeNumber[:0], seasonAndEpisodeNumber[1:]...)
 
 		// Find matching .srt files.
 		for _, g := range files {
@@ -111,13 +67,13 @@ func main() {
 			srtFilename := filenameExpression.FindStringSubmatch(g.Name())
 
 			// Skip all files without the defined subtitle extension.
-			if !checkForFileExtension(subtitleFileExtension, srtFilename[2]) {
+			if len(srtFilename) < 2 || !checkForFileExtension(subtitleFileExtension, srtFilename[2]) {
 				continue
 			}
 
 			// Skip all files with file names that do not contain YYxYY (e.g. 02x12) or SYYEYY (e.g. S02E12)
-			subtitleNameMatchOne, _ := regexp.MatchString(strings.ToUpper(strings.Join(result, "x")), strings.ToUpper(g.Name()))
-			subtitleNameMatchTwo, _ := regexp.MatchString(strings.ToUpper("S" + strings.Join(result, "E")), strings.ToUpper(g.Name()))
+			subtitleNameMatchOne, _ := regexp.MatchString(strings.ToUpper(strings.Join(seasonAndEpisodeNumber, "x")), strings.ToUpper(g.Name()))
+			subtitleNameMatchTwo, _ := regexp.MatchString(strings.ToUpper("S" + strings.Join(seasonAndEpisodeNumber, "E")), strings.ToUpper(g.Name()))
 
 			if !subtitleNameMatchOne && !subtitleNameMatchTwo {
 				continue
@@ -147,6 +103,62 @@ func main() {
 		fmt.Println("No files found to rename.")
 	}
 
+}
+
+func readCommandLineArguments () {
+	pathToFolderPtr := flag.String("path", "", "The path to the folder with video and srt files. If none is specified the folder with the executable is used.")
+	searchWordPtr := flag.String("searchWord", "", "Provide a unique word to identify the files by. E.g. 'Queens' or 'Mother'")
+	videoFileExtensionPtr := flag.String("videoFileExtension", ".mkv", "Provide the video file extension. Defaults to .mkv.")
+	subtitleFileExtensionPtr := flag.String("subtitleFileExtension", ".srt", "Provide the subtitle file extension. Defaults to .srt.")
+	confirmationRequiredPtr := flag.String("enableConfirmation", "", "Enable the confirmation before every rename. If enabled every rename need to be confirmed by typing 'y' or denied by typing 'n'")
+
+	flag.Parse()
+
+	pathToFolder =  *pathToFolderPtr
+	searchWord =  *searchWordPtr
+	videoFileExtension =  *videoFileExtensionPtr
+	confirmationRequired = *confirmationRequiredPtr
+	subtitleFileExtension = *subtitleFileExtensionPtr
+
+	// If no path was specified, use the current folder.
+	if pathToFolder == "" {
+		currentPath, err := filepath.Abs(filepath.Dir(os.Args[0]))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		pathToFolder = currentPath
+	}
+
+	// Check if the last character in the path is a slash. If not, add it.
+	if !strings.HasSuffix(pathToFolder, "/") && !strings.HasSuffix(pathToFolder, "\\") {
+		pathToFolder = pathToFolder + "\\"
+	}
+
+	confirmationRequiredBool = false
+	if confirmationRequired != "" {
+		confirmationRequiredBool = true
+	}
+
+	fmt.Println("Looking for files in " + pathToFolder)
+
+	if searchWord != "" {
+		fmt.Println("Looking for files that include the expression: " + searchWord)
+	} else {
+		fmt.Println("Looking for all files")
+	}
+
+	if videoFileExtension != "" {
+		fmt.Println("Looking for video files with file extension: " + videoFileExtension)
+	} else {
+		fmt.Println("Looking for all video files")
+	}
+
+	if subtitleFileExtension != "" {
+		fmt.Println("Looking for subtitle files with file extension: " + subtitleFileExtension)
+	} else {
+		fmt.Println("Looking for all subtitle files")
+	}
 }
 
 func checkForFileName(searchWord string, sourceWord string) bool {
