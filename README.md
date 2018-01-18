@@ -1,4 +1,4 @@
-# subtitlerenamer
+# Subtitle Renamer
 A tool to more quickly rename many subtitle files to match the video file.
 
 Everybody knows the issue. You get a new tv series but the video file name does not match the subtitle file name.
