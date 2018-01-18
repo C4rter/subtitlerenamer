@@ -22,7 +22,6 @@ func main() {
 	flag.Parse()
 
 	pathToFolder :=  *pathToFolderPtr
-	pathToFolder = ""
 	searchWord :=  *searchWordPtr
 	videoFileExtension :=  *videoFileExtensionPtr
 	confirmationRequired := *confirmationRequiredPtr
@@ -111,16 +110,12 @@ func main() {
 				continue
 			}
 
-			// Skip all files with file names that do not contain YYxYY (e.g. 02x12)
-			match, _ := regexp.MatchString(strings.ToUpper(strings.Join(result, "x")), strings.ToUpper(g.Name()))
+			// Skip all files with file names that do not contain YYxYY (e.g. 02x12) or SYYEYY (e.g. S02E12)
+			subtitleNameMatchOne, _ := regexp.MatchString(strings.ToUpper(strings.Join(result, "x")), strings.ToUpper(g.Name()))
+			subtitleNameMatchTwo, _ := regexp.MatchString(strings.ToUpper("S" + strings.Join(result, "E")), strings.ToUpper(g.Name()))
 
-			if !match {
-				// Nothing found? Try to find subtitle files that contain SYYEYY (e.g. S02E12)
-				match, _ = regexp.MatchString(strings.ToUpper("S" + strings.Join(result, "E")), strings.ToUpper(g.Name()))
-
-				if !match {
-					continue
-				}
+			if !subtitleNameMatchOne && !subtitleNameMatchTwo {
+				continue
 			}
 
 			fmt.Println("Found a match between " + f.Name() + " and " + g.Name())
