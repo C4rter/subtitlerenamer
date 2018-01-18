@@ -9,7 +9,6 @@ This tool will help you to make this task more easy.
 The tool can be used without providing any parameters. It can be refined when using the parameters.
 
 The following commands can be used:
-
 <h3>Usage of subtitlerenamer.exe</h3>
 <ul>
   <li>-enableConfirmation
@@ -23,10 +22,12 @@ The following commands can be used:
   <li>-videoFileExtension
     	Provide the video file extension. Defaults to .mkv. (default ".mkv")</li>
 </ul>
-<br>
+<br><br>
+Example call with all parameters:<br>
+subtitlerenamer.exe -path="C:/folder/subfolder/" -searchWord=King -videoFileExtension=.mkv -subtitleFileExtension=.srt -enableConfirmation=1
+<br><br>
 Without providing any parameters the tool matches files and can rename files like:
-<br>
-<br>
+<br><br>
 <h3>Example files 1:</h3>
 <ul>
 <li>This.Is.A.New.Series.S01E01.The.Pilot.AC3.WEB.XViD-CREW.mkv</li>
