@@ -35,7 +35,12 @@ func main() {
 			log.Fatal(err)
 		}
 
-		pathToFolder = currentPath + "\\"
+		pathToFolder = currentPath
+	}
+
+	// Check if the last character in the path is a slash. If not, add it.
+	if !strings.HasSuffix(pathToFolder, "/") && !strings.HasSuffix(pathToFolder, "\\") {
+		pathToFolder = pathToFolder + "\\"
 	}
 
 	confirmationRequiredBool := false
