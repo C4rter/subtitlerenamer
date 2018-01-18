@@ -5,29 +5,35 @@ import (
 	"log"
 	"flag"
 	"io/ioutil"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"os"
 )
 
 func main() {
-	wordPtr := flag.String("path", "", "The path to the folder with video and srt files.")
-	searchWordPtr := flag.String(".", "", "Provide a unique word to identify the files by.")
+	pathToFolderPtr := flag.String("path", "", "The path to the folder with video and srt files. If non is specified the folder with the executable is used.")
+	searchWordPtr := flag.String(".", "", "Provide a unique word to identify the files by. E.g. 'Queens' or 'Mother'")
 	videoFileExtensionPtr := flag.String("videoFileExtension", ".mkv", "Provide the video file extension. Defaults to .mkv.")
 	subtitleFileExtensionPtr := flag.String("subtitleFileExtension", ".srt", "Provide the subtitle file extension. Defaults to .srt.")
 	confirmationRequiredPtr := flag.String("disableConfirmation", "", "Disable the confirmation before every rename.")
 
 	flag.Parse()
 
-	pathToFolder :=  *wordPtr
+	pathToFolder :=  *pathToFolderPtr
 	searchWord :=  *searchWordPtr
 	videoFileExtension :=  *videoFileExtensionPtr
 	confirmationRequired := *confirmationRequiredPtr
 	subtitleFileExtension := *subtitleFileExtensionPtr
 
+	// If no path was specified, use the current folder.
 	if pathToFolder == "" {
-		fmt.Println("Please define a -path")
-		return
+		currentPath, err := filepath.Abs(filepath.Dir(os.Args[0]))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		pathToFolder = currentPath;
 	}
 
 	confirmationRequiredBool := false
@@ -54,7 +60,6 @@ func main() {
 	} else {
 		fmt.Println("Looking for all subtitle files")
 	}
-
 
 	files, err := ioutil.ReadDir(pathToFolder)
 	if err != nil {
@@ -103,11 +108,16 @@ func main() {
 				continue
 			}
 
-			// Skip all files with file names that do not contain YYxYY (e.g. 02x12) TODO: Maybe find other subtitle files too?
-			match, _ := regexp.MatchString(strings.Join(result, "x"), g.Name())
+			// Skip all files with file names that do not contain YYxYY (e.g. 02x12)
+			match, _ := regexp.MatchString(strings.ToUpper(strings.Join(result, "x")), strings.ToUpper(g.Name()))
 
 			if !match {
-				continue
+				// Nothing found? Try to find subtitle files that contain SYYEYY (e.g. S02E12)
+				match, _ = regexp.MatchString(strings.ToUpper("S" + strings.Join(result, "E")), strings.ToUpper(g.Name()))
+
+				if !match {
+					continue
+				}
 			}
 
 			fmt.Println("Found a match between " + f.Name() + " and " + g.Name())
