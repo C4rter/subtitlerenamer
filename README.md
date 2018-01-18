@@ -13,7 +13,7 @@ The following commands can be used:
 <h3>Usage of subtitlerenamer.exe</h3>
 <ul>
   <li>-enableConfirmation
-    	Enable the confirmation before every rename. If enabled every rename need to be confirmed by typing "y" or denied by typing "n".</li>
+    	Enable the confirmation before every rename. If enabled every rename needs to be confirmed by typing "y" or denied by typing "n".</li>
   <li>-path
     	The path to the folder with video and srt files. If none is specified the folder the executable resides in is used.</li>
   <li>-searchWord
