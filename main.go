@@ -43,11 +43,18 @@ func main() {
 		fmt.Println("Looking for all files")
 	}
 
-	if searchWord != "" {
+	if videoFileExtension != "" {
 		fmt.Println("Looking for video files with file extension: " + videoFileExtension)
 	} else {
 		fmt.Println("Looking for all video files")
 	}
+
+	if subtitleFileExtension != "" {
+		fmt.Println("Looking for subtitle files with file extension: " + subtitleFileExtension)
+	} else {
+		fmt.Println("Looking for all subtitle files")
+	}
+
 
 	files, err := ioutil.ReadDir(pathToFolder)
 	if err != nil {
