@@ -24,7 +24,7 @@ The following commands can be used:
 </ul>
 <br><br>
 Example call with all parameters:<br>
-subtitlerenamer.exe -path="C:/folder/subfolder/" -searchWord=King -videoFileExtension=.mkv -subtitleFileExtension=.srt -enableConfirmation=1
+subtitlerenamer.exe -path="C:/folder/subfolder/" -searchWord="Queens" -videoFileExtension=".avi" -subtitleFileExtension=".sub" -enableConfirmation=1
 <br><br>
 Without providing any parameters the tool matches files and can rename files like:
 <br><br>
