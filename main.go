@@ -80,13 +80,13 @@ func main() {
 			}
 
 			fmt.Println("Found a match between " + f.Name() + " and " + g.Name())
-			fmt.Println("Renaming " + g.Name() + " to " + videoFilename[1] + ".srt" + " (y/n?)")
+			fmt.Println("Renaming " + g.Name() + " to " + videoFilename[1] + subtitleFileExtension + " (y/n?)")
 
 			if confirmationRequiredBool && !askForConfirmation() {
 				continue
 			}
 
-			err := os.Rename(pathToFolder + g.Name(), pathToFolder + videoFilename[1] + ".srt")
+			err := os.Rename(pathToFolder + g.Name(), pathToFolder + videoFilename[1] + subtitleFileExtension)
 
 			if err != nil {
 				log.Fatal(err)
