@@ -15,8 +15,10 @@ import (
 var pathToFolder string
 var searchWord string
 var videoFileExtension string
+var videoFileExtensionSlice []string
 var confirmationRequired string
 var subtitleFileExtension string
+var subtitleFileExtensionSlice []string
 var confirmationRequiredBool bool
 
 func main() {
@@ -29,7 +31,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// Find matching .mkv (video) files.
+	// Find matching video files.
 	for _, f := range files {
 
 		// Skip all files that did not match the search string.
@@ -41,7 +43,12 @@ func main() {
 		videoFilename := filenameExpression.FindStringSubmatch(f.Name())
 
 		// Check if the file even has a file extension and if that file extension is the video type.
-		if len(videoFilename) < 2 || !checkForFileExtension(videoFileExtension, videoFilename[2]) {
+		if len(videoFilename) < 2 {
+			continue
+		}
+
+		// Check if the file even has a file extension and if that file extension is the video type.
+		if checkForFileExtension(videoFileExtensionSlice, videoFilename[2]) == "" {
 			continue
 		}
 
@@ -67,7 +74,13 @@ func main() {
 			srtFilename := filenameExpression.FindStringSubmatch(g.Name())
 
 			// Skip all files without the defined subtitle extension.
-			if len(srtFilename) < 2 || !checkForFileExtension(subtitleFileExtension, srtFilename[2]) {
+			if len(srtFilename) < 2 {
+				continue
+			}
+
+			// Skip all files without the defined subtitle extensions.
+			subtitleFileExtension = checkForFileExtension(subtitleFileExtensionSlice, srtFilename[2])
+			if subtitleFileExtension == "" {
 				continue
 			}
 
@@ -108,8 +121,8 @@ func main() {
 func readCommandLineArguments () {
 	pathToFolderPtr := flag.String("path", "", "The path to the folder with video and srt files. If none is specified the folder with the executable is used.")
 	searchWordPtr := flag.String("searchWord", "", "Provide a unique word to identify the files by. E.g. 'Queens' or 'Mother'")
-	videoFileExtensionPtr := flag.String("videoFileExtension", ".mkv", "Provide the video file extension. Defaults to .mkv.")
-	subtitleFileExtensionPtr := flag.String("subtitleFileExtension", ".srt", "Provide the subtitle file extension. Defaults to .srt.")
+	videoFileExtensionPtr := flag.String("videoFileExtension", ".mkv,.mp4", "Provide the video file extension. E.g. '.mkv,.mp4'. Defaults to .mkv and .mp4.")
+	subtitleFileExtensionPtr := flag.String("subtitleFileExtension", ".srt,.sub", "Provide the subtitle file extension. E.g. '.srt,.sub'. Defaults to .srt and .sub.")
 	confirmationRequiredPtr := flag.String("enableConfirmation", "", "Enable the confirmation before every rename. If enabled every rename need to be confirmed by typing 'y' or denied by typing 'n'")
 
 	flag.Parse()
@@ -149,13 +162,21 @@ func readCommandLineArguments () {
 	}
 
 	if videoFileExtension != "" {
-		fmt.Println("Looking for video files with file extension: " + videoFileExtension)
+		videoFileExtensionSlice = strings.Split(videoFileExtension, ",")
+
+		for i := range videoFileExtensionSlice {
+			fmt.Println("Looking for video files with file extension: " + videoFileExtensionSlice[i])
+		}
 	} else {
 		fmt.Println("Looking for all video files")
 	}
 
 	if subtitleFileExtension != "" {
-		fmt.Println("Looking for subtitle files with file extension: " + subtitleFileExtension)
+		subtitleFileExtensionSlice = strings.Split(subtitleFileExtension, ",")
+
+		for i := range subtitleFileExtensionSlice {
+			fmt.Println("Looking for subtitle files with file extension: " + subtitleFileExtensionSlice[i])
+		}
 	} else {
 		fmt.Println("Looking for all subtitle files")
 	}
@@ -174,15 +195,20 @@ func checkForFileName(searchWord string, sourceWord string) bool {
 	return true
 }
 
-func checkForFileExtension(searchExtension string, sourceExtension string) bool {
+func checkForFileExtension(searchExtensions []string, sourceExtension string) string {
+
+	if len(searchExtensions) == 0 {
+		return sourceExtension;
+	}
+
 	// Skip files that do not match the given video file extension.
-	if searchExtension != "" {
-		if searchExtension != sourceExtension {
-			return false
+	for i := range searchExtensions {
+		if sourceExtension == searchExtensions[i] {
+			return searchExtensions[i]
 		}
 	}
 
-	return true
+	return ""
 }
 
 func askForConfirmation() bool {
