@@ -119,11 +119,11 @@ func main() {
 }
 
 func readCommandLineArguments () {
-	pathToFolderPtr := flag.String("path", "", "The path to the folder with video and srt files. If none is specified the folder with the executable is used.")
+	pathToFolderPtr := flag.String("path", "", "The path to the folder with video and srt files or directly to a file. If none is specified the folder with the executable is used.")
 	searchWordPtr := flag.String("searchWord", "", "Provide a unique word to identify the files by. E.g. 'Queens' or 'Mother'")
 	videoFileExtensionPtr := flag.String("videoFileExtension", ".mkv,.mp4", "Provide the video file extension. E.g. '.mkv,.mp4'. Defaults to .mkv and .mp4.")
 	subtitleFileExtensionPtr := flag.String("subtitleFileExtension", ".srt,.sub", "Provide the subtitle file extension. E.g. '.srt,.sub'. Defaults to .srt and .sub.")
-	confirmationRequiredPtr := flag.String("enableConfirmation", "", "Enable the confirmation before every rename. If enabled every rename need to be confirmed by typing 'y' or denied by typing 'n'")
+	confirmationRequiredPtr := flag.String("enableConfirmation", "", "Enable the confirmation before every rename. If enabled every rename needs to be confirmed by typing 'y' or denied by typing 'n'")
 
 	flag.Parse()
 
@@ -141,7 +141,10 @@ func readCommandLineArguments () {
 		}
 
 		pathToFolder = currentPath
+	} else {
+		pathToFolder = filepath.Dir(pathToFolder)
 	}
+
 
 	// Check if the last character in the path is a slash. If not, add it.
 	if !strings.HasSuffix(pathToFolder, "/") && !strings.HasSuffix(pathToFolder, "\\") {
