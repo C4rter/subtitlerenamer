@@ -49,6 +49,7 @@ Without providing any parameters the tool matches files and can rename files lik
 <br>will be renamed to<br>
 <i>This.Is.A.New.Series.S01E01.The.Pilot.AC3.WEB.XViD-CREW.srt</i>
 <h3>Context Menu Entry</h3>
-The file "context-menu.reg" add a context menu entry. The executable needs to be put into: C:\subtitlerenamer\subtitlerenamer.exe
+The file "context-menu.reg" add a context menu entry.
+The executable needs to be put into: C:\subtitlerenamer\subtitlerenamer.exe
 After that, the context menu entry can be used to select a video file and start renaming the subtitle files in the current folder.
 Attention: At the moment, all the subtile files in the folder will be renamed not just the file. For now it's just to easier select the current working folder.
