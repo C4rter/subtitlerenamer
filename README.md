@@ -18,13 +18,13 @@ The following commands can be used:
   <li>-searchWord
     	Provide a unique word to identify the files by. E.g. 'Queens' or 'Mother'. This is helpful if you have other files in the folder.</li>
   <li>-subtitleFileExtension
-    	Provide the subtitle file extension. Defaults to .srt. (default ".srt")</li>
+    	Provide the subtitle file extension. Defaults to .srt. (default ".srt,.sub")</li>
   <li>-videoFileExtension
-    	Provide the video file extension. Defaults to .mkv. (default ".mkv")</li>
+    	Provide the video file extension. Defaults to .mkv. (default ".mkv,.mp4")</li>
 </ul>
 <br><br>
 Example call with all parameters:<br>
-subtitlerenamer.exe -path="C:/folder/subfolder/" -searchWord="Queens" -videoFileExtension=".avi" -subtitleFileExtension=".sub" -enableConfirmation=1
+subtitlerenamer.exe -path="C:/folder/subfolder/" -searchWord="Queens" -videoFileExtension=".avi,.mkv,.mp4" -subtitleFileExtension=".srt,.sub" -enableConfirmation=1
 <br><br>
 Without providing any parameters the tool matches files and can rename files like:
 <br><br>
